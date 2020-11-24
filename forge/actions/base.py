@@ -1,10 +1,11 @@
-from datetime import datetime as dt
-import time
-import re
-import subprocess
 import os
+import re
 import selectors
+import subprocess
 import sys
+import time
+from datetime import datetime as dt
+from logging import DEBUG, ERROR, INFO, WARN  # noqa: F401
 
 from logzero import logger as log
 
