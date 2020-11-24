@@ -4,6 +4,15 @@ from forge.entities.base import Base
 
 
 class SyncPlans(Base):
+  """Forged SyncPlans object.
+
+  Matches nailgun.entity.SyncPlans
+
+  :param Base: forge.entities.Base
+  :type Base: BaseClass
+  :return: List of SyncPlans entities
+  :rtype: list
+  """
   days = ['monday', 'tuesday', 'wednesday',
           'thursday', 'friday', 'saturday',
           'sunday']

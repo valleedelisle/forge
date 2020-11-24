@@ -3,6 +3,14 @@ from nailgun.entity_mixins import MissingValueError
 
 
 class Subscriptions(Base):
+  """Forged Subscriptions object.
+  Matches nailgun.entity.Subscriptions
+
+  :param Base: forge.entities.Base
+  :type Base: BaseClass
+  :return: List of Subscriptions entities
+  :rtype: list
+  """
   def __init__(self, cfg, **kwargs):
     self.entity = "Subscription"
     super().__init__(cfg, **kwargs)

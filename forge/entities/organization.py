@@ -2,9 +2,13 @@ from forge.entities.base import Base
 
 
 class Org(Base):
-  """ Methot that gets an organisation based on a name
-  Uses the default org if no name is provided
-  :returns: nailgun.entities.Organization like object
+  """Forged Oraganization object.
+  Matches nailgun.entity.Organization
+
+  :param Base: forge.entities.Base
+  :type Base: BaseClass
+  :return: List of Organization entities
+  :rtype: list
   """
   def __init__(self, cfg, name=None):
     self.entity = "Organization"

@@ -2,6 +2,14 @@ from forge.entities.base import Base
 
 
 class Repositories(Base):
+  """Forged Repositories object.
+  Matches nailgun.entity.Repositories
+
+  :param Base: forge.entities.Base
+  :type Base: BaseClass
+  :return: List of Repositories entities
+  :rtype: list
+  """
   def __init__(self, cfg, org):
     self.entity = "Repository"
     super().__init__(cfg, org)

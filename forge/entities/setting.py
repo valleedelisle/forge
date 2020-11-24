@@ -4,6 +4,14 @@ from forge.entities.base import Base
 
 
 class Settings(Base):
+  """Forged Setting object.
+  Matches nailgun.entity.Setting
+
+  :param Base: forge.entities.Base
+  :type Base: BaseClass
+  :return: List of Setting entities
+  :rtype: list
+  """
   def __init__(self, cfg):
     self.entity = "Setting"
     super().__init__(cfg)

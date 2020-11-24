@@ -9,9 +9,15 @@ from alive_progress import alive_bar
 
 
 class Products(Base):
-  """ Satellite Products creation
-  This is where we create the products based on the repos
-  We also create the container products.
+  """Forged Product object.
+  Matches nailgun.entity.Product
+
+  Used mostly the container repos.
+
+  :param Base: forge.entities.Base
+  :type Base: BaseClass
+  :return: List of Product entities
+  :rtype: list
   """
   def __init__(self, cfg, org, name=None):
     self.entity = "Product"

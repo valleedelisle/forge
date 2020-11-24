@@ -2,7 +2,22 @@ from forge.entities.base import Base
 
 
 class Domains(Base):
+  """Forged Domain object.
+  Matches nailgun.entity.Domain
+
+  :param Base: forge.entities.Base
+  :type Base: BaseClass
+  :return: List of Domain entities
+  :rtype: list
+  """
   def __init__(self, cfg, orgs=[], name=None):
+    """Class initialization
+
+    :param cfg: Configuration object
+    :type cfg: forge.config
+    :param orgs: forged Org objects
+    :type orgs: list, forge.entities.Org
+    """
     self.entity = "Domain"
     if name:
       self.name = name

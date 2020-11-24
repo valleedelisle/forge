@@ -4,7 +4,22 @@ from forge.entities.base import Base
 
 
 class LifecycleEnvironments(Base):
+  """Forged LifecycleEnvironment object.
+  Matches nailgun.entity.LifecycleEnvironment
+
+  :param Base: forge.entities.Base
+  :type Base: BaseClass
+  :return: List of LifecycleEnvironment entities
+  :rtype: list
+  """
   def __init__(self, cfg, org):
+    """Class initialization
+
+    :param cfg: Configuration object
+    :type cfg: forge.config
+    :param org: forged Org object
+    :type org: forge.entities.Org
+    """
     self.entity = "LifecycleEnvironment"
     super().__init__(cfg, org)
 

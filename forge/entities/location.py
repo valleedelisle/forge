@@ -2,11 +2,20 @@ from forge.entities.base import Base
 
 
 class Location(Base):
-  """ Methot that gets a location based on a name
-  Uses the default location if no name is provided
-  :returns: nailgun.entities.Organization like object
+  """Forged Location object.
+  Matches nailgun.entity.Location
+
+  :param Base: forge.entities.Base
+  :type Base: BaseClass
+  :return: List of Location entities
+  :rtype: list
   """
   def __init__(self, cfg, name=None):
+    """Class initialization
+
+    :param cfg: Configuration object
+    :type cfg: forge.config
+    """
     self.entity = "Location"
     if not name:
       if self._cfg.satellite["default_location"]:

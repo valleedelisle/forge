@@ -9,6 +9,14 @@ import json
 
 
 class RepositorySets(Base):
+  """Forged RepositorySets object.
+  Matches nailgun.entity.RepositorySets
+
+  :param Base: forge.entities.Base
+  :type Base: BaseClass
+  :return: List of RepositorySets entities
+  :rtype: list
+  """
   def __init__(self, cfg, org):
     self.entity = "RepositorySet"
     # Caching

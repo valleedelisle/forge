@@ -4,6 +4,14 @@ from forge.entities.base import Base
 
 
 class Subnets(Base):
+  """Forged Subnet object.
+  Matches nailgun.entity.Subnet
+
+  :param Base: forge.entities.Base
+  :type Base: BaseClass
+  :return: List of Subnet entities
+  :rtype: list
+  """
   def __init__(self, cfg, orgs=[]):
     self.entity = "Subnet"
     super().__init__(cfg, orgs=orgs)
