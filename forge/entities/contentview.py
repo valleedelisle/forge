@@ -204,7 +204,7 @@ class ContentViews(Base):
     item = self.new_item()
     item.organization = Org(self._cfg, name=r["org"]).item
     if cv_type == "CCV":
-      item.auto_publish = True
+      item.auto_publish = r["auto_publish"]
       item.composite = True
       item.component = cvvs
     else:
