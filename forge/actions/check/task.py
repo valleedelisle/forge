@@ -55,7 +55,7 @@ reset_pulp_task('%FOREMAN_TASK_ID%')"""
     with open(tmp.name, 'w') as f:
       f.write(script)
     log.info(tmp.name)
-    cmd = ["foreman-console", tmp.name, "--trace"]
+    cmd = ["foreman-rake", tmp.name, "--trace"]
     if self.run(cmd, "reset-pulp-task"):
       self.checkout()
 
