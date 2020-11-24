@@ -175,9 +175,10 @@ def repos(repo_type, enabled, label):
 
 @check.command(name="content-views", help="Searches the Content Views")
 @click.option("-d", "--delete", is_flag=True,
-              help="Delete all content-views")
-def check_cvs(delete):
-  load_module("check", "contentview")(cfg, delete)
+              help="Delete content-views")
+@click.option("-m", "--match", help="Match pattern to filter")
+def check_cvs(delete, match):
+  load_module("check", "contentview")(cfg, delete, match)
 
 
 @check.command(help="Task manipulation")

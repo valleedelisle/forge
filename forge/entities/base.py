@@ -235,7 +235,9 @@ class Base(object):
     try:
       if kwargs["operator"] == "not":
         operator = " != "
-        del kwargs["operator"]
+      elif kwargs["operator"] == "like":
+        operator = " ~ "
+      del kwargs["operator"]
     except KeyError:
       pass
     # Takes kwargs, quote them if necessary and join them
