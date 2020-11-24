@@ -29,6 +29,9 @@ class ActivationKeys(Base):
     self.entity = "ActivationKey"
     super().__init__(cfg, org=org)
 
+  def get_by_cv(self, cv):
+    return self.search(None, **{"content_view_id": cv.id})
+
   def create_all(self, releases):
     """Loops through the configured releases and generates the ActivationKeys
 

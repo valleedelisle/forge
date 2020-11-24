@@ -4,6 +4,7 @@ from prettytable import PrettyTable
 
 from forge.actions.base import Base
 from forge.entities.contentview import ContentViews as ContentViewEntity
+from forge.entities.activationkey import ActivationKeys
 from forge.entities.organization import Org
 from logzero import logger as log
 from alive_progress import alive_bar
@@ -25,10 +26,15 @@ class Contentview(Base):
     x.field_names = ["ID", "Label", "Version", "Repositories", "Last Published"]
     x.max_width["Version"] = 80
     number_of_versions = sum([len(c.version) for c in items])
+    ak = ActivationKeys(self._cfg, self.org)
     with alive_bar(number_of_versions,
       title="Getting CV version information") as bar:
       for c in items:
         versions = []
+        if delete:
+          log.info(f"Deleting activation keys for {c.name}")
+          for aks in ak.get_by_cv(c):
+            aks.delete()
         for version in c.version:
           vd = version.read_json()
           bar(f"Got {c.name} {vd['version']}")
