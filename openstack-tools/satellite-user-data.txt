@@ -1,0 +1,70 @@
+#cloud-config
+user: root
+logcfg: |
+ [loggers]
+ keys=root,cloudinit
+ [handlers]
+ keys=ch,cf
+ [formatters]
+ keys=
+ [logger_root]
+ level=DEBUG
+ handlers=
+ [logger_cloudinit]
+ level=DEBUG
+ qualname=cloudinit
+ handlers=ch,cf
+ [handler_ch]
+ class=StreamHandler
+ level=DEBUG
+ args=(sys.stderr,)
+ [handler_cf]
+ class=FileHandler
+ level=DEBUG
+ args=('/var/log/cloud-init-debug.log',)
+ssh_pwauth: True
+ssh_authorized_keys:
+  - ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBKZjeGPK/Lmjm9q35A9LjagtFCFl5eVrvmvx531OKNx/GQ0Nurq6Bnk2QpIjsj+/DQy4mf8Yc9L8xAL1anQHCeA= dvd@localhost
+chpasswd:
+  list: |
+     root:password
+  expire: False
+output:
+  all: '>> /var/log/cloud-init-output.log'
+bootcmd:
+ - restorecon -R -F -v /var
+disable_root: 0
+runcmd:
+ - echo -e "nameserver 8.8.8.8\nnameserver 8.8.4.4" > /etc/resolv.conf
+ - hostnamectl set-hostname ess-satellite.usersys.redhat.com
+ - echo "ESS Satellite server" > /etc/motd
+ - sed -i ''/^alias/d'' ~/.bash_profile ~/.bashrc
+ - subscription-manager register --org=1234 --activationkey=my-key
+ - subscription-manager attach --pool=xxx
+ - subscription-manager repos --disable "*"
+ - subscription-manager repos --enable=rhel-7-server-rpms --enable=rhel-7-server-satellite-6.7-rpms --enable=rhel-7-server-satellite-maintenance-6-rpms --enable=rhel-server-rhscl-7-rpms --enable=rhel-7-server-ansible-2.8-rpms
+ - ssh-keygen -t ecdsa -f /root/.ssh/id_ecdsa -q -N ""
+ - wipefs -a /dev/vdb /dev/vdc
+ - yum update -y
+ - yum install -y lvm2 git chrony sos screen vim rh-python38-python rh-python38-python-libs rh-python38-python-pip rh-python38-python-psutil rh-python38-python-requests bind-utils
+ - systemctl start chronyd
+ - systemctl enable chronyd
+ - pvcreate /dev/vdb
+ - pvcreate /dev/vdc
+ - vgcreate satellite /dev/vdb /dev/vdc
+ - lvcreate -l 100%FREE -n var satellite
+ - mkfs.xfs /dev/mapper/satellite-var
+ - mount /dev/mapper/satellite-var /mnt
+ - cp -pr /var/* /mnt/
+ - umount /mnt
+ - echo "/dev/mapper/satellite-var /var xfs defaults 0 0" >> /etc/fstab
+ - git config --global http.sslVerify false
+ - git clone https://github.com/valleedelisle/forge.git /root/forge
+ - scl enable rh-python38 "pip3 install virtualenv"
+ - scl enable rh-python38 "python3.8 -m virtualenv /root/forge/.python3"
+ - source /root/forge/.python3/bin/activate
+ - /root/forge/.python3/bin/pip3 install -r /root/forge/requirements.txt
+ - echo -e "source /root/forge/.python3/bin/activate\nalias vi=vim\n" >> /root/.bashrc
+ - echo -e 'export pulpAdminPassword=$(grep ^default_password /etc/pulp/server.conf | cut -d" " -f2)' >> /root/.bashrc
+ - echo -e 'alias pulp-admin="pulp-admin -u admin -p \$pulpAdminPassword"' >> /root/.bashrc
+ - reboot
