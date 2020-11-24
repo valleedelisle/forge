@@ -60,7 +60,6 @@ class Base(object):
       duration = "N/A"
     return duration
 
-
   def read_releases(self, stack_releases=[], zreleases=[]):
     """ Generates a releases dict based on config cvs, containertags and zdates
     """
@@ -123,7 +122,7 @@ class Base(object):
                                  stdin=subprocess.PIPE,
                                  stdout=subprocess.PIPE,
                                  stderr=subprocess.PIPE,
-                                 preexec_fn=os.setsid, env=self.env)
+                                 preexec_fn=os.setsid)
     self.sel = selectors.DefaultSelector()
     self.sel.register(self.task.stdout, selectors.EVENT_READ)
     self.sel.register(self.task.stderr, selectors.EVENT_READ)
