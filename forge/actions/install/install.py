@@ -1,4 +1,3 @@
-from logging import DEBUG, ERROR, INFO, WARN  # noqa: F401
 import os
 import re
 import socket
