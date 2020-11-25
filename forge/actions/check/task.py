@@ -59,6 +59,28 @@ reset_pulp_task('%FOREMAN_TASK_ID%')"""
     if self.run(cmd, "reset-pulp-task"):
       self.checkout()
 
+  def delete_blocked_tasks(self, actions=['Promote', 'Publish'],
+    states=['paused', 'pending]']):
+    """ Deletes blocked foreman tasks
+
+    :param actions: List of actions under Actions::Katello::ContentView
+                    defaults to ['Promote', 'Publish']
+    :type action: list, optional
+    :param states: List of states to delete
+                   defaults to ['paused', 'pending]']
+    :type states: list, optional
+    """
+    # foreman-rake foreman_tasks:cleanup \
+    # TASK_SEARCH='label = Actions::Katello::ContentView::Promote' \
+    # STATES='paused' VERBOSE=true
+    for action in actions:
+      task_search = f"label = Actions::Katello::ContentView::{action}"
+      cmd = ["foreman-rake", "foreman_tasks:cleanup",
+        f"TASK_SEARCH='{task_search}'", f"STATES='{','.join(states)}''",
+        "VERBOSE=true"]
+      if self.run(cmd, "delete-blocked-task"):
+        self.checkout()
+
   def get_incompletes(self):
     log.debug("Searching for incomplete tasks")
     tasks = self.tasks.search(state="stopped", operator="not")
