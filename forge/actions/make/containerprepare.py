@@ -52,7 +52,8 @@ class Containerprepare(Base):
           latest_tag = f"{release}{z}".replace("z", ".").replace("OSP", "")
           template = os.path.join(output_dir,
             f"container-image-prepare.{latest_tag}.yaml")
-          log.info(template)
+          if z == "latest":
+            latest_tag = "latest"
           excludes = []
           # removing ceph
           noceph_containers = self.filter_containers(containers, 'openstack-|rhel')
@@ -88,7 +89,6 @@ class Containerprepare(Base):
             ceph_image = ''
           namespace = self.get_namespace(repo)
           clist.append({
-            "tag_from_label": "{version}-{release}",
             "excludes": excludes,
             "push_destination": False,
             "set": {
