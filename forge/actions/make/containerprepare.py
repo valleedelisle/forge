@@ -1,6 +1,7 @@
 import os
 import re
 from copy import deepcopy
+from datetime import datetime
 from re import sub
 from tempfile import mkdtemp
 
@@ -50,8 +51,8 @@ class Containerprepare(Base):
           content = deepcopy(base)
           clist = content["parameter_defaults"]["ContainerImagePrepare"]
           latest_tag = f"{release}{z}".replace("z", ".").replace("OSP", "")
-          template = os.path.join(output_dir,
-            f"container-image-prepare.{latest_tag}.yaml")
+          filename = f"container-image-prepare.{latest_tag}.yaml"
+          template = os.path.join(output_dir, filename)
           if z == "latest":
             latest_tag = "latest"
           excludes = []
@@ -60,12 +61,12 @@ class Containerprepare(Base):
           for container, tag in noceph_containers.items():
             log.debug(f"Container {container} Tag: {tag}")
             container_name = sub('^openstack-', '', container)
-            excludes.append(container)
+            excludes.append(container_name)
             repo = self.get_repo_by_name(cv, container_name)
             if repo:
               prefix = repo.container_repository_name.replace(container_name, "")
               clist.append({
-                "includes": [container],
+                "includes": [container_name],
                 "push_destination": False,
                 "set": {
                   "name_prefix": prefix,
@@ -101,8 +102,12 @@ class Containerprepare(Base):
               "tag": latest_tag
             }
           })
+          now = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
           with os.fdopen(os.open(template, os.O_CREAT | os.O_TRUNC | os.O_WRONLY,
                                  0o666), 'w') as f:
+            f.write(f"# File {filename} was prepared by forge for OSP {release}{z}")
+            f.write(f"# Generated on {now}")
+            f.write("# https://github.com/valleedelisle/forge")
             yaml.dump(content, f, default_flow_style=False)
 
   def _build_repo_cache(self, cvs):
