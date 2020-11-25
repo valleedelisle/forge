@@ -66,6 +66,10 @@ class ContentViews(Base):
       if composite_only or (not promote_only and r["container"]):
         self.create_composite_cvs(r, release)
         self.promote_all(releases, composites=True, force=force)
+    print("Content views recreated. Make sure you update the container-prepare-"
+          "parameters.yaml files because the content-view version is part of the "
+          "container repository url in satellite. This can be done with forger:")
+    print("./forger.py make container-prepare --help")
 
   def create_rhel_cvs(self, r, release):
     """Function to create the RHEL CVs with erratum date filter
