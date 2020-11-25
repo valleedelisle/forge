@@ -18,3 +18,5 @@ class ErratumContentViewFilters(Base):
     """
     self.entity = "ErratumContentViewFilter"
     super().__init__(cfg, **kwargs)
+    self.item.inclusion = True
+    self.item.type = "erratum"

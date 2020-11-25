@@ -17,5 +17,6 @@ class DockerContentViewFilters(Base):
     :type cfg: forge.config
     """
     self.entity = "DockerContentViewFilter"
-    self.type = "docker"
     super().__init__(cfg, **kwargs)
+    self.item.type = "docker"
+    self.item.inclusion = True

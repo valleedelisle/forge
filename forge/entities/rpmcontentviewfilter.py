@@ -13,3 +13,6 @@ class RPMContentViewFilters(Base):
   def __init__(self, cfg):
     self.entity = "RPMContentViewFilter"
     super().__init__(cfg)
+    self.item.type = "rpm"
+    self.item.original_packages = True
+    self.item.inclusion = True

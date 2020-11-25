@@ -10,6 +10,8 @@ from forge.entities.dockercontentviewfilter import \
 from forge.entities.erratumcontentviewfilter import \
     ErratumContentViewFilters  # noqa: F401,E501
 from forge.entities.lifecycle_environment import LifecycleEnvironments
+from forge.entities.modulestreamcontentviewfilter import \
+    ModuleStreamContentViewFilters  # noqa: F401,E501
 from forge.entities.organization import Org
 from forge.entities.repository import Repositories
 from forge.entities.repository_set import RepositorySets
@@ -92,6 +94,7 @@ class ContentViews(Base):
         if date != "latest":
           self.generate_filter("erratum", self.item, repos, date=date)
           self.generate_filter("rpm", self.item, repos)
+          self.generate_filter("module_stream", self.item, repos)
         self.log_bar(f"Publishing {release}-{zrelease}", bar)
         self.item.publish(
           synchronous=self._cfg.satellite.getboolean("async_publish"),
@@ -193,10 +196,10 @@ class ContentViews(Base):
     :param zrelease: Zrelease name (z1, z2, etc)
     :type zrelease: str
     :param repos: List of RepositorySet entities, used when generating RHEL
-                  ContentViews, defaults to []
+    ContentViews, defaults to []
     :type repos: list, optional
     :param cvvs: List of ContentViewVersion entitles, used when generating
-                 CompositeContentView, defaults to []
+    CompositeContentView, defaults to []
     :type cvvs: list, optional
     :return: generated ContentView entity
     :rtype: nailgun.entity.ContentView
@@ -208,7 +211,6 @@ class ContentViews(Base):
       item.composite = True
       item.component = cvvs
     else:
-      item.auto_publish = False
       item.repository = repos
       cv_type = "CV " + cv_type
     item.name = f"{cv_type} {r['tag']} {release}-{zrelease}"
@@ -241,16 +243,12 @@ class ContentViews(Base):
     if tag == "latest":
       return
     cvf = self.get_cvf_obj(filter_type)
-    cvf.item.label = sub(r"^CV_", f"CVF_{filter_type.capitalize()}_", cv.label)
+    cvf.item.label = sub(r"^CV_", f"CVF_{self.camel_case(filter_type)}_", cv.label)
     if filter_type == "docker":
       cvf.item.label += f"_{repos[0].name}_{tag}"
     cvf.item.name = cvf.item.label
-    cvf.item.type = filter_type
     cvf.item.repository = repos
     cvf.item.content_view = cv
-    cvf.item.inclusion = True
-    if filter_type == "rpm":
-      cvf.item.original_packages = True
     log.debug(f"Making CVF {cvf.item.name} {cvf.item.type} ")
     for repo in repos:
       log.debug(f"Adding repo {repo.label}")
@@ -318,7 +316,19 @@ class ContentViews(Base):
     :rtype: forge.entities.FilterTypeContentViewFilters
     """
     return getattr(sys.modules[__name__],
-      f"{filter_type.capitalize()}ContentViewFilters")(self._cfg)
+      f"{self.camel_case(filter_type)}ContentViewFilters")(self._cfg)
+
+  def camel_case(self, value):
+    """Converts a string to CamelCase name for easy import.
+    Underscores are word delemiter. For example:
+    `module_stream` will be converted to `ModuleStream`
+
+    :param value: String to camel case
+    :type value: str
+    :return: CamelCase conversion of string
+    :rtype: str
+    """
+    return "".join(list(map(lambda m: m.capitalize(), value.split("_"))))
 
   def get_created_cvs_names(self):
     return ", ".join([x.name for x in self.created_cvs])
