@@ -26,13 +26,16 @@ class Containerprepare(Base):
     self.org = Org(cfg, name=self._cfg.satellite["default_org"])
     releases = self.read_releases(releases, zreleases)
     base = {'parameter_defaults': {'ContainerImagePrepare': []}}
+    base_param = base["parameter_defaults"]
+    registry_url = f"{self._cfg.satellite['host']}:5000"
     if user and password:
-      base["parameter_defaults"]["ContainerImageRegistryCredentials"] = {
-        f"{self._cfg.satellite['host']}:5000": {
+      base_param["ContainerImageRegistryCredentials"] = {
+        registry_url: {
           user: password
         }
       }
-      base["parameter_defaults"]["ContainerImageRegistryLogin"] = True
+      base_param["ContainerImageRegistryLogin"] = True
+    base_param["DockerInsecureRegistryAddress"] = registry_url
     for release, r in releases.items():
       if r["container"]:
         cvs = ContentViews(self._cfg, self.org).get_by_releases(release,
