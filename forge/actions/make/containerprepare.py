@@ -5,7 +5,7 @@ from datetime import datetime
 from re import sub
 from tempfile import mkdtemp
 
-import yaml
+from ruamel import yaml
 from alive_progress import alive_bar
 from forge.actions.base import Base
 from forge.entities.contentview import ContentViews
@@ -64,12 +64,15 @@ class Containerprepare(Base):
           for container, tag in noceph_containers.items():
             log.debug(f"Container {container} Tag: {tag}")
             container_name = sub('^openstack-', '', container)
-            excludes.append(container_name)
+            # We need to include/exclude with some kind of end-of-pattern string (:)
+            # because of this bug: https://bugzilla.redhat.com/show_bug.cgi?id=1853354
+            # Other wise, "heat-api" will also match "heat-api-cfn" for example.
+            excludes.append(f"{container_name}:")
             repo = self.get_repo_by_name(cv, container_name)
             if repo:
               prefix = repo.container_repository_name.replace(container_name, "")
               clist.append({
-                "includes": [container_name],
+                "includes": [f"{container_name}:"],
                 "push_destination": False,
                 "set": {
                   "name_prefix": prefix,
@@ -112,6 +115,7 @@ class Containerprepare(Base):
             f.write(f"# Generated on {now}")
             f.write("# https://github.com/valleedelisle/forge")
             yaml.dump(content, f, default_flow_style=False)
+          log.info(f"generated {filename}")
 
   def _build_repo_cache(self, cvs):
     self.repo_cache = {}
