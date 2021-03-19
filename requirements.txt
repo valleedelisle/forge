@@ -24,7 +24,7 @@ requests==2.25.0
 six==1.15.0
 toml==0.10.2
 tox==3.20.1
-urllib3==1.26.2
+urllib3==1.26.3
 virtualenv==20.1.0
 wcwidth==0.2.5
 ruamel.yaml==0.16.12
